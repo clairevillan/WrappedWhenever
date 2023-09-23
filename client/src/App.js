@@ -15,7 +15,6 @@ function App() {
   const [artists, setArtists] = useState([])
   const [topArtists, setTopArtists] = useState([])
   const [topTracks, setTopTracks] = useState([])
-  const [activeTab, setActiveTab] = useState('topArtists') // initial state
 
   useEffect(() => {
     const hash = window.location.hash
@@ -140,10 +139,6 @@ function App() {
     );
   };
 
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
-
 
   return (
     <div className="App">
@@ -158,20 +153,11 @@ function App() {
 
                 {token ? (
                   <div>
-                    <button onClick={() => handleTabChange('topArtists')}>Top Artists</button>
-                    <button onClick={() => handleTabChange('topTracks')}>Top Tracks</button>
+                    <button onClick={fetchTopArtists}>Fetch Top Artists</button>
+                    <button onClick={fetchTopTracks}>Fetch Top Tracks</button>
           
-                    {activeTab === 'topArtists' && (
-                      <div>
-                        {renderTopArtists()}
-                      </div>
-                    )}
-                    {activeTab === 'topArtists' && (
-                      <div>
-                        {renderTopTracks()}
-                      </div>
-                    )}
-                
+                    {renderTopArtists()}
+                    {renderTopTracks()}
                   </div>
                 ) : (
                   <h2>Please login</h2>
