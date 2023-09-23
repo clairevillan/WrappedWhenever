@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/WrappedWhenever/static/css/main.073c9b0a.css",
+    "main.js": "/WrappedWhenever/static/js/main.eb79a321.js",
+    "static/js/787.c4e7f8f9.chunk.js": "/WrappedWhenever/static/js/787.c4e7f8f9.chunk.js",
+    "index.html": "/WrappedWhenever/index.html",
+    "main.073c9b0a.css.map": "/WrappedWhenever/static/css/main.073c9b0a.css.map",
+    "main.eb79a321.js.map": "/WrappedWhenever/static/js/main.eb79a321.js.map",
+    "787.c4e7f8f9.chunk.js.map": "/WrappedWhenever/static/js/787.c4e7f8f9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.073c9b0a.css",
+    "static/js/main.eb79a321.js"
+  ]
+}
