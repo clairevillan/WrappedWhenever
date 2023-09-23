@@ -8,10 +8,13 @@ function App() {
   const REDIRECT_URI = "http://localhost:3000"
   const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
   const RESPONSE_TYPE = "token"
+  const SCOPES = "user-read-currently-playing%20user-top-read"
 
   const [token, setToken] = useState("")
   const [searchKey, setSearchKey] = useState("")
   const [artists, setArtists] = useState([])
+  const [topArtists, setTopArtists] = useState([])
+  const [topTracks, setTopTracks] = useState([])
 
   useEffect(() => {
     const hash = window.location.hash
@@ -28,7 +31,7 @@ function App() {
     setToken(token)
   }, [])
 
-  //LOGOUT FUNCTION
+  // LOGOUT FUNCTION
   const logout = () => {
     setToken("")
     window.localStorage.removeItem("token")
@@ -50,34 +53,120 @@ function App() {
     setArtists(data.artists.items)
 }
 
-const renderArtists = () => {
-  return artists.map(artist => (
-      <div key={artist.id}>
-          {artist.images.length ? <img width={"100%"} src={artist.images[0].url} alt=""/> : <div>No Image</div>}
-          {artist.name}
+  // FETCH USERS TOP ARTISTS
+  const fetchTopArtists = async () => {
+    try {
+      const { data: topArtistsResponse } = await axios.get(
+        "https://api.spotify.com/v1/me/top/artists",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setTopArtists(topArtistsResponse.items);
+    } catch (error){
+      console.error("Error fetching top artists:", error);
+    }
+  };
+
+  // FETCH USERS TOP TRACKS
+  const fetchTopTracks = async () => {
+    
+    try {
+      const { data: topTracksResponse } = await axios.get(
+        "https://api.spotify.com/v1/me/top/tracks",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      setTopTracks(topTracksResponse.items);
+    } catch (error) {
+      console.error("Error fetching top tracks:", error);
+    }
+  };
+
+
+
+  // RENDER SEARCHED ARTIST
+  const renderArtists = () => {
+    return artists.map(artist => (
+        <div key={artist.id}>
+            {artist.images.length ? <img width={"100%"} src={artist.images[0].url} alt=""/> : <div>No Image</div>}
+            {artist.name}
+        </div>
+    ))
+  }
+
+  // RENDER TOP ARTISTS
+  const renderTopArtists = () => {
+    return (
+      <div>
+        <h2>Top Artists:</h2>
+        {topArtists.map((artist) => (
+          <div key={artist.id}>
+            {artist.images.length ? (
+              <img width={"100%"} src={artist.images[0].url} alt="" />
+            ) : (
+              <div>No Image</div>
+            )}
+            {artist.name}
+          </div>
+        ))}
       </div>
-  ))
-}
+    );
+  };
+
+  // RENDER TOP TRACKS
+  const renderTopTracks = () => {
+    return (
+      <div>
+        <h2>Top Tracks:</h2>
+        {topTracks.map((track) => (
+          <div key={track.id}>
+            {track.album.images.length ? (
+              <img width={"100%"} src={track.album.images[0].url} alt="" />
+            ) : (
+              <div>No Image</div>
+            )}
+            {track.name}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+
   return (
     <div className="App">
         <header className="App-header">
             <h1>Wrapped Whenever</h1>
-            {!token ?
-                <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}>Login
+            {!token ? (
+                <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPES}`}>Login
                     to Spotify</a>
-                : <button onClick={logout}>Logout</button>}
+              ) : (
+                <button onClick={logout}>Logout</button>
+              )}
 
-            {token ?
-              <form onSubmit={searchArtists}>
-                <input type="text" onChange={e => setSearchKey(e.target.value)}/>
-                <button type={"submit"}>Search</button>
-              </form>
-              : <h2>Please login</h2>
+                {token ? (
+                  <div>
+                    <button onClick={fetchTopArtists}>Fetch Top Artists</button>
+                    <button onClick={fetchTopTracks}>Fetch Top Tracks</button>
+          
+                    {renderTopArtists()}
+                    {renderTopTracks()}
+                  </div>
+                ) : (
+                  <h2>Please login</h2>
+                )}
+          
+                {renderArtists(artists)}
+              </header>
+            </div>
+          );
         }
-        {renderArtists()}
-        </header>
-    </div>
-);
-}
 
 export default App;
